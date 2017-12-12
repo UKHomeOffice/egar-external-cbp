@@ -22,7 +22,11 @@ public class CarrierService extends Service {
     public final static URL WSDL_LOCATION;
 
     public final static QName SERVICE = new QName("http://fincore.com/CBPCarrierWebService/", "CarrierService");
-    public final static QName CarrierWcfWebServiceHttp = new QName("http://fincore.com/CBPCarrierWebService/", "CarrierWcfWebService.Http");
+    /**
+     * Edited as a hacky fix
+     * public final static QName CarrierWcfWebServiceHttp = new QName("http://fincore.com/CBPCarrierWebService/", "CarrierWcfWebService.Http");
+     */
+    public final static QName CarrierWcfWebServiceHttp = new QName("http://fincore.com/CBPCarrierWebService/", "CarrierWcfWebService.Https");
     static {
         URL url = null;
         try {
