@@ -43,6 +43,41 @@
 				<version>5.0.0.RELEASE</version>
 			</extension>
 		</extensions>
+		<pluginManagement>
+			<plugins>
+				<!-- If we e.g. execute on JDK 1.7, we should compile for Java 7 to get 
+					the same (or higher) JAXB API version as used during the xjc execution. -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>xjc</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<sources>
+						<source>src/main/resources/xml-schema/UAT_eBorders_Carrier_web_service_WSDL.XML</source>
+					</sources>
+					<!-- The package of your generated sources -->
+					<packageName>com.fincore.cbpcarrierwebservice</packageName>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 
 	<!-- Using S3 as Maven repository See: https://blog.zestmoney.in/using-s3-as-maven-repository-4b96e8045ccf 
