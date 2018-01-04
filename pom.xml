@@ -5,6 +5,7 @@
 	<name>Egar external cbp</name>
 	<description>External systems to which egar interfaces</description>
 	<version>4.0.0</version>
+	<packaging>jar</packaging>
 	<parent>
 		<groupId>uk.gov.digital.ho.egar</groupId>
 		<artifactId>egar-parent</artifactId>
@@ -18,68 +19,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<aws.repo.bucket>egar-maven-s3-repo</aws.repo.bucket>
 	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-	</dependencies>
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-
-		<extensions>
-			<extension>
-				<groupId>org.springframework.build</groupId>
-				<artifactId>aws-maven</artifactId>
-				<version>5.0.0.RELEASE</version>
-			</extension>
-		</extensions>
-		<pluginManagement>
-			<plugins>
-				<!-- If we e.g. execute on JDK 1.7, we should compile for Java 7 to get 
-					the same (or higher) JAXB API version as used during the xjc execution. -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxb2-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>xjc</id>
-						<goals>
-							<goal>xjc</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<sources>
-						<source>src/main/resources/xml-schema/UAT_eBorders_Carrier_web_service_WSDL.XML</source>
-					</sources>
-					<!-- The package of your generated sources -->
-					<packageName>com.fincore.cbpcarrierwebservice</packageName>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
+	
 	<!-- Using S3 as Maven repository See: https://blog.zestmoney.in/using-s3-as-maven-repository-4b96e8045ccf 
 		The repository needs to be defined absolutely as no variables are resolved 
 		until the parent POM is found. The general issue seems to be, that you cannot 
@@ -96,7 +36,74 @@
 			<url>http://egar-maven-s3-repo.s3-website-us-east-1.amazonaws.com/snapshot</url>
 		</repository>
 	</repositories>
-
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.springframework.build</groupId>
+				<artifactId>aws-maven</artifactId>
+				<version>5.0.0.RELEASE</version>
+			</extension>
+		</extensions>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>2.3.1</version>
+				<executions>
+					<execution>
+						<id>xjc</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<packageName>com.fincore.cbp.stt.xml</packageName>
+					<sources>
+						<source>cbp-schema/schema-xsd/STT_XML_v1_5.xsd</source>
+					</sources>
+					<xjbSources>
+						<xjbSource>cbp-schema/schema-xsd/binding/VAT_binding.xjb</xjbSource>
+					</xjbSources>
+					<clearOutputDir>false</clearOutputDir>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-codegen-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceRoot>target/generated-sources/</sourceRoot>
+							<wsdlOptions>
+								<wsdlOption>
+									<wsdl>cbp-service/service-wsdl/Production_eBorders_Carrier_web_service_WSDL.XML</wsdl>
+								</wsdlOption>
+							</wsdlOptions>
+						</configuration>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 	<distributionManagement>
 		<repository>
